@@ -10,9 +10,12 @@ namespace usersApi.Controllers
         // Tạo dữ liệu ảo cho bảng users(id, name)
         private static List<User> _users = new List<User>
         {
-            new User { id = 1, name = "Nguyen Van A" },
-            new User { id = 2, name = "Tran Thi B" },
-            new User { id = 3, name = "Le Van C" }
+            new User { id = 1, name = "Nguyễn Hoàng Lợi" },
+            new User { id = 2, name = "Lê Hữu Luân" },
+            new User { id = 3, name = "Nguyễn Phúc Sang" },
+            new User { id = 4, name = "Phan Ngọc Thao" },
+            new User { id = 5, name = "Võ Đình Thiệu" },
+            new User { id = 6, name = "Bùi Nguyễn Minh Vy" }
         };
 
         // 1. API lấy tất cả user -> BASE_API/users
