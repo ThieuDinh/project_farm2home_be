@@ -1,5 +1,6 @@
-
+using farm2homeWebApi;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace usersApi.Controllers
 {
@@ -7,68 +8,64 @@ namespace usersApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        // Tạo dữ liệu ảo cho bảng users(id, name)
-        private static List<User> _users = new List<User>
-        {
-            new User { id = 1, name = "Nguyễn Hoàng Lợi" },
-            new User { id = 2, name = "Lê Hữu Luân" },
-            new User { id = 3, name = "Nguyễn Phúc Sang" },
-            new User { id = 4, name = "Phan Ngọc Thao" },
-            new User { id = 5, name = "Võ Đình Thiệu" },
-            new User { id = 6, name = "Bùi Nguyễn Minh Vy" }
-        };
+        private readonly AppDbContext _context;
 
-        // 1. API lấy tất cả user -> BASE_API/users
+        // Tiêm (Inject) AppDbContext vào Controller
+        public UsersController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        // --- READ ---
         [HttpGet]
         public IActionResult GetAllUsers()
         {
-            return Ok(_users);
+            // Lấy trực tiếp từ Database
+            return Ok(_context.Users.ToList()); 
         }
 
-        // 2. API lấy user theo id -> BASE_API/users/1
         [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
         {
-            var user = _users.FirstOrDefault(u => u.id == id);
-            if (user == null) 
-            {
-                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy
-            }
+            var user = _context.Users.FirstOrDefault(u => u.id == id);
+            if (user == null) return NotFound();
             return Ok(user);
         }
+
+        // --- CREATE ---
         [HttpPost]
         public IActionResult CreateUser([FromBody] User newUser)
         {
-            // Tự động tăng ID
-            newUser.id = _users.Any() ? _users.Max(u => u.id) + 1 : 1;
-            _users.Add(newUser);
-            return Ok(newUser); // Trả về user vừa tạo thành công
+            _context.Users.Add(newUser);
+            _context.SaveChanges(); // Lưu vĩnh viễn vào DB thật
+            return Ok(newUser);
         }
 
-        // --- UPDATE (Sửa) ---
+        // --- UPDATE ---
         [HttpPut("{id}")]
         public IActionResult UpdateUser(int id, [FromBody] User updatedUser)
         {
-            var user = _users.FirstOrDefault(u => u.id == id);
+            var user = _context.Users.FirstOrDefault(u => u.id == id);
             if (user == null) return NotFound();
 
-            user.name = updatedUser.name; // Cập nhật tên
+            user.name = updatedUser.name;
+            _context.SaveChanges(); // Cập nhật vào DB
             return Ok(user);
         }
 
-        // --- DELETE (Xóa) ---
+        // --- DELETE ---
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
-            var user = _users.FirstOrDefault(u => u.id == id);
+            var user = _context.Users.FirstOrDefault(u => u.id == id);
             if (user == null) return NotFound();
 
-            _users.Remove(user);
+            _context.Users.Remove(user);
+            _context.SaveChanges(); // Xóa khỏi DB
             return Ok(new { message = "Xóa thành công!" });
         }
     }
 
-    // Model map với table users
     public class User
     {
         public int id { get; set; }
