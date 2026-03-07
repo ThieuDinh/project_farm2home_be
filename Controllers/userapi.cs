@@ -36,6 +36,36 @@ namespace usersApi.Controllers
             }
             return Ok(user);
         }
+        [HttpPost]
+        public IActionResult CreateUser([FromBody] User newUser)
+        {
+            // Tự động tăng ID
+            newUser.id = _users.Any() ? _users.Max(u => u.id) + 1 : 1;
+            _users.Add(newUser);
+            return Ok(newUser); // Trả về user vừa tạo thành công
+        }
+
+        // --- UPDATE (Sửa) ---
+        [HttpPut("{id}")]
+        public IActionResult UpdateUser(int id, [FromBody] User updatedUser)
+        {
+            var user = _users.FirstOrDefault(u => u.id == id);
+            if (user == null) return NotFound();
+
+            user.name = updatedUser.name; // Cập nhật tên
+            return Ok(user);
+        }
+
+        // --- DELETE (Xóa) ---
+        [HttpDelete("{id}")]
+        public IActionResult DeleteUser(int id)
+        {
+            var user = _users.FirstOrDefault(u => u.id == id);
+            if (user == null) return NotFound();
+
+            _users.Remove(user);
+            return Ok(new { message = "Xóa thành công!" });
+        }
     }
 
     // Model map với table users
