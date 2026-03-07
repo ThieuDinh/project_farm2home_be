@@ -1,0 +1,7 @@
+C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\bin\Release\net9.0\publish\farm2homeWebApi.exe
+C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\bin\Release\net9.0\publish\appsettings.Development.json
+C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\bin\Release\net9.0\publish\appsettings.json
+C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\bin\Release\net9.0\publish\farm2homeWebApi.dll
+C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\bin\Release\net9.0\publish\farm2homeWebApi.deps.json
+C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\bin\Release\net9.0\publish\farm2homeWebApi.runtimeconfig.json
+C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\bin\Release\net9.0\publish\farm2homeWebApi.pdb
