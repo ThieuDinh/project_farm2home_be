@@ -3,30 +3,40 @@ name: Deploy Backend to SmarterASP
 on:
   push:
     branches:
-      - master # Hoặc đổi thành 'master' nếu nhánh chính của bạn tên là master
+      - master # HOẶC master (Tùy thuộc vào tên nhánh của bạn)
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 1. Tải code từ GitHub về máy chủ ảo
+    - name: 1. Tải code từ GitHub về
       uses: actions/checkout@v3
 
     - name: 2. Cài đặt môi trường .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x' # Đổi thành 6.0.x hoặc 7.0.x nếu bạn dùng bản cũ hơn
+        dotnet-version: '8.0.x'
 
     - name: 3. Đóng gói dự án (Publish)
       run: dotnet publish -c Release -o ./publish_output
 
-    - name: 4. Đẩy file lên SmarterASP qua FTP
+    - name: 4. Bật chế độ bảo trì (Mở khóa file DLL)
+      run: |
+        echo "Hệ thống đang cập nhật, vui lòng quay lại sau ít phút..." > app_offline.htm
+        curl -T app_offline.htm ftp://${{ secrets.FTP_SERVER }}/site1/app_offline.htm --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+        sleep 5 
+        # Lệnh sleep 5 giúp server có 5 giây để kịp thời đóng ứng dụng và nhả file
+
+    - name: 5. Đẩy code mới lên SmarterASP qua FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./publish_output/
-        server-dir: /site1/ # Thư mục gốc trên host của bạn
-        danger-action: true # Cho phép ghi đè/xóa file cũ
+        server-dir: /site1/
+
+    - name: 6. Khởi động lại server (Xóa file bảo trì)
+      run: |
+        curl ftp://${{ secrets.FTP_SERVER }}/site1/ --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} -Q "-DELE /site1/app_offline.htm"
