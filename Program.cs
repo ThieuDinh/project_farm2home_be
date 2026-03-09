@@ -28,6 +28,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated(); // Tự động tạo DB và Bảng
+    db.Database.ExecuteSqlRaw("IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='AuditLogs' and xtype='U') CREATE TABLE AuditLogs (Id INT IDENTITY(1,1) PRIMARY KEY, Action NVARCHAR(50), Details NVARCHAR(MAX), CreatedAt DATETIME2);");
 }
 // 2. THÊM DÒNG NÀY: Kích hoạt bộ định tuyến để nó dò tìm [Route("users")] của bạn
 app.MapControllers();
