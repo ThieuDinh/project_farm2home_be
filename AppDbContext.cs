@@ -16,7 +16,7 @@ namespace farm2homeWebApi
         public string Action { get; set; }   // Hành động (THÊM, SỬA, XÓA)
         public string Details { get; set; }  // Chi tiết (Xóa ai, thêm ai)
         public DateTime CreatedAt { get; set; } // Thời gian
-        public string IpAddress { get; set; }
+        public string? IpAddress { get; set; }
     }
     }
 
