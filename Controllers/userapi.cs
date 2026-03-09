@@ -20,8 +20,22 @@ namespace usersApi.Controllers
         public IActionResult GetSecretLogs()
         {
             // Lấy log mới nhất xếp lên đầu
-            var logs = _context.AuditLogs.OrderByDescending(l => l.CreatedAt).ToList();
-            return Ok(logs);
+           try
+            {
+                // Cố gắng lấy dữ liệu
+                var logs = _context.AuditLogs.OrderByDescending(l => l.CreatedAt).ToList();
+                return Ok(logs);
+            }
+            catch (System.Exception ex)
+            {
+                // Nếu bị sập (lỗi 500), thay vì hiện trang trắng, nó sẽ in dòng lỗi đỏ chót ra màn hình
+                return Ok(new 
+                { 
+                    ThongBao = "Bắt được bệnh rồi!", 
+                    LoiChinh = ex.Message, 
+                    LoiSauXa = ex.InnerException?.Message 
+                });
+            }
         }
         // --- READ ---
         [HttpGet]
