@@ -58,7 +58,9 @@ namespace usersApi.Controllers
         [HttpPost]
         public IActionResult CreateUser([FromBody] User newUser)
         {
-            var clientIp = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Không xác định";
+           var clientIp = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+               ?? HttpContext.Connection.RemoteIpAddress?.ToString() 
+               ?? "Không xác định";
             _context.Users.Add(newUser);
             _context.AuditLogs.Add(new AuditLog { Action = "THÊM", Details = $"Thêm user mới: {newUser.name}", CreatedAt = DateTime.UtcNow.AddHours(7),IpAddress = clientIp });
             _context.SaveChanges(); // Lưu vĩnh viễn vào DB thật
@@ -69,7 +71,9 @@ namespace usersApi.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateUser(int id, [FromBody] User updatedUser)
         {
-             var clientIp = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Không xác định";
+            var clientIp = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+               ?? HttpContext.Connection.RemoteIpAddress?.ToString() 
+               ?? "Không xác định";
             var user = _context.Users.FirstOrDefault(u => u.id == id);
             if (user == null) return NotFound();
             string oldName = user.name;
@@ -83,7 +87,9 @@ namespace usersApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
-             var clientIp = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Không xác định";
+             var clientIp = Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+               ?? HttpContext.Connection.RemoteIpAddress?.ToString() 
+               ?? "Không xác định";
             var user = _context.Users.FirstOrDefault(u => u.id == id);
             if (user == null) return NotFound();
 
