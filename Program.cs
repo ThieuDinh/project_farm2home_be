@@ -2,6 +2,8 @@ using farm2homeWebApi;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 // 1. THÊM DÒNG NÀY: Báo cho chương trình biết chúng ta sẽ xài Controller
 builder.Services.AddControllers();
@@ -22,7 +24,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseCors("AllowAll");
 using (var scope = app.Services.CreateScope())
 {
