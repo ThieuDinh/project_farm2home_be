@@ -154,3 +154,4 @@ C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\obj\Debug\net9.0\refint\farm2homeWebApi.d
 C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\obj\Debug\net9.0\farm2homeWebApi.pdb
 C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\obj\Debug\net9.0\farm2homeWebApi.genruntimeconfig.cache
 C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\obj\Debug\net9.0\ref\farm2homeWebApi.dll
+C:\Dai Hoc\ASPNET CORE\farm2homeWebApi\bin\Debug\net9.0\BCrypt.Net-Next.dll
