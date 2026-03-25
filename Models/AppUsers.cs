@@ -24,4 +24,5 @@ public string? Street { get; set; }
     public string? FacebookId { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? LastUpdatedAt { get;}
 }
