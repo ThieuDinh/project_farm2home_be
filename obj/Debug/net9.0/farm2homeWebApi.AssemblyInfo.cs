@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("farm2homeWebApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d389de6b5346a339dc79cebb9362f4a7fa6b8f15")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22f5bcbc880f4d1d551b632bafc8627c77d11c0e")]
 [assembly: System.Reflection.AssemblyProductAttribute("farm2homeWebApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("farm2homeWebApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
