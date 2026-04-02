@@ -13,10 +13,10 @@ jobs:
     - name: 1. Tải code từ GitHub về
       uses: actions/checkout@v3
 
-    - name: 2. Cài đặt môi trường .NET 8.0
-      uses: actions/setup-dotnet@v3
+    - name: 2. Cài đặt môi trường .NET 9.0
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '9.0.x'
 
     - name: 3. Đóng gói dự án (Publish)
       run: dotnet publish -c Release -o ./publish_output
