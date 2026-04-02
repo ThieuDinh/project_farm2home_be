@@ -1,10 +1,11 @@
 using farm2homeWebApi; // Thay bằng namespace chứa AppDbContext của bạn
+using farm2homeWebApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
 namespace farm2homeWebApi.Controllers
 {
-    [Route("auth")] 
+    [Route("auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -18,6 +19,11 @@ namespace farm2homeWebApi.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             // 1. Kiểm tra xem Email đã bị trùng trong DB chưa
             var emailExists = _context.AppUsers.Any(u => u.Email == request.Email);
             if (emailExists)
@@ -25,32 +31,34 @@ namespace farm2homeWebApi.Controllers
                 return BadRequest(new { message = "Email này đã được sử dụng!" });
             }
 
-            // 2. Băm mật khẩu (Hashing) - Tuyệt đối không lưu request.Password
-            // BCrypt sẽ tự động sinh "muối" (salt) để bảo vệ mật khẩu
+            // 2. Băm mật khẩu (Hashing) - Chú ý: Chỉ băm request.Password, bỏ qua ConfirmPassword
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-            // 3. Đổ dữ liệu từ DTO sang Entity thực tế
+            // 3. Đổ dữ liệu từ DTO sang Entity thực tế (Chỉ gán các trường có trong form)
             var newUser = new AppUser
             {
                 Email = request.Email,
                 PasswordHash = hashedPassword,
                 FullName = request.FullName,
                 PhoneNumber = request.PhoneNumber,
-                Province = request.Province,
-                Ward = request.Ward,
-                Street = request.Street,
-                Age = request.Age,
-                IsEmailVerified = false // Mặc định là chưa xác thực email
+
+                // Cố tình để các trường này là null, user sẽ cập nhật sau
+                Province = null,
+                Ward = null,
+                Street = null,
+                Age = null,
+
+                IsEmailVerified = false
             };
 
             // 4. Lưu vào Database
             _context.AppUsers.Add(newUser);
             _context.SaveChanges();
 
-            // Trả về thông báo thành công (KHÔNG trả về PasswordHash)
-            return Ok(new { 
+            return Ok(new
+            {
                 message = "Đăng ký thành công! Vui lòng kiểm tra email để xác thực.",
-                userEmail = newUser.Email 
+                userEmail = newUser.Email
             });
         }
     }
