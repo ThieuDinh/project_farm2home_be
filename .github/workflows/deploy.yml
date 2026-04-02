@@ -3,7 +3,7 @@ name: Deploy Backend to SmarterASP
 on:
   push:
     branches:
-      - master # HOẶC master (Tùy thuộc vào tên nhánh của bạn)
+      - master # HOẶC master (Tùy thuộc vào tên nhánh của bạn) tot
 
 jobs:
   build-and-deploy:
