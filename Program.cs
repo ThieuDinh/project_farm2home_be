@@ -1,9 +1,60 @@
-using farm2homeWebApi;
+using System.Text;
+using farm2homeWebApi.Data;
+using farm2homeWebApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+builder
+    .Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("\n[JWT DEBUG] LỖI XÁC THỰC: " + context.Exception.Message);
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("\n[JWT DEBUG] TOKEN HỢP LỆ!");
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                Console.WriteLine(
+                    "\n[JWT DEBUG] BỊ TỪ CHỐI (401): "
+                        + context.Error
+                        + " - "
+                        + context.ErrorDescription
+                );
+                return Task.CompletedTask;
+            },
+        };
+    });
+
+builder.Services.AddAuthorization(); // Thêm dịch vụ phân quyền
 
 // 1. THÊM DÒNG NÀY: Báo cho chương trình biết chúng ta sẽ xài Controller
 builder.Services.AddControllers();
@@ -11,17 +62,19 @@ builder.Services.AddControllers();
 // Bật CORS cho Vercel (React) gọi được API (Như đã hướng dẫn trước đó)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
+    options.AddPolicy(
+        "AllowAll",
         builder =>
         {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
+            builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+    );
 });
+
 // Đăng ký kết nối SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 var app = builder.Build();
 app.UseSwagger();
@@ -30,14 +83,11 @@ app.UseCors("AllowAll");
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated(); 
-    
-    // Tạo bảng nếu chưa có
-    db.Database.ExecuteSqlRaw("IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='AuditLogs' and xtype='U') CREATE TABLE AuditLogs (Id INT IDENTITY(1,1) PRIMARY KEY, Action NVARCHAR(50), Details NVARCHAR(MAX), CreatedAt DATETIME2);");
-    
-    // Tự động thêm cột IpAddress nếu bảng cũ chưa có cột này
-    db.Database.ExecuteSqlRaw("IF COL_LENGTH('AuditLogs', 'IpAddress') IS NULL ALTER TABLE AuditLogs ADD IpAddress NVARCHAR(50);");
+    db.Database.EnsureCreated();
 }
+app.UseAuthentication();
+app.UseAuthorization(); // Thêm Middleware phân quyền ở đây!
+
 // 2. THÊM DÒNG NÀY: Kích hoạt bộ định tuyến để nó dò tìm [Route("users")] của bạn
 app.MapControllers();
 

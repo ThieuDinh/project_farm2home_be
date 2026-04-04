@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,11 +6,15 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace farm2homeWebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class createappuser : Migration
+    public partial class UpdateUserFields : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("IF OBJECT_ID('dbo.AppUsers', 'U') IS NOT NULL DROP TABLE dbo.AppUsers;");
+            migrationBuilder.Sql("IF OBJECT_ID('dbo.AuditLogs', 'U') IS NOT NULL DROP TABLE dbo.AuditLogs;");
+            migrationBuilder.Sql("IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL DROP TABLE dbo.Users;");
+
             migrationBuilder.CreateTable(
                 name: "AppUsers",
                 columns: table => new
@@ -21,7 +25,9 @@ namespace farm2homeWebApi.Migrations
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Province = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Ward = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Street = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Age = table.Column<int>(type: "int", nullable: true),
                     IsEmailVerified = table.Column<bool>(type: "bit", nullable: false),
                     EmailVerificationToken = table.Column<string>(type: "nvarchar(max)", nullable: true),

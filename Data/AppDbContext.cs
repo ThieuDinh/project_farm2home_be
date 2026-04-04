@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using usersApi.Controllers; // Để nó nhận diện được class User
+using farm2homeWebApi.Models;
+using usersApi.Controllers; // Giữ lại tạm thời cho class User nếu chưa dời đi
 
-namespace farm2homeWebApi
+namespace farm2homeWebApi.Data
 {
     public class AppDbContext : DbContext
     {

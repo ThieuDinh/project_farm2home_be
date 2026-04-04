@@ -1,7 +1,7 @@
-using farm2homeWebApi;
+using farm2homeWebApi.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using static farm2homeWebApi.AppDbContext;
+using static farm2homeWebApi.Data.AppDbContext;
 
 namespace usersApi.Controllers
 {
