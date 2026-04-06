@@ -4,6 +4,7 @@ using farm2homeWebApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -77,9 +78,25 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 var app = builder.Build();
+
+// Hỗ trợ Forwarded Headers (để nhận diện HTTPS/IP chính xác khi chạy sau Proxy của Host)
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
+// Luôn hiển thị Swagger (kể cả trên Host) theo yêu cầu của bạn
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Farm2Home API v1");
+    options.RoutePrefix = string.Empty; // Truy cập Swagger ngay tại trang chủ API
+});
+
 app.UseStaticFiles();
+app.UseRouting(); // Kích hoạt bộ định tuyến trước khi dùng CORS
+
+// Cấu hình CORS để cho phép FE gọi API
 app.UseCors("AllowAll");
 
 using (var scope = app.Services.CreateScope())
