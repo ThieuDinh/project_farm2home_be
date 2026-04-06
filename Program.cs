@@ -79,11 +79,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseStaticFiles();
 app.UseCors("AllowAll");
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    // db.Database.EnsureCreated(); // EnsureCreated chỉ tạo DB nếu chưa có, không chạy migration
+    db.Database.Migrate(); // Tự động chạy tất cả migration còn thiếu khi startup
 }
 app.UseAuthentication();
 app.UseAuthorization(); // Thêm Middleware phân quyền ở đây!
