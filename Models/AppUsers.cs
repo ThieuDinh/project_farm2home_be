@@ -25,6 +25,9 @@ public class AppUser
     public string? GoogleId { get; set; }
     public string? FacebookId { get; set; }
 
+    public string Role { get; set; } = "Customer"; // Customer | Admin
+    public bool IsBanned { get; set; } = false; // Trạng thái khóa tài khoản
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastUpdatedAt { get; }
 }

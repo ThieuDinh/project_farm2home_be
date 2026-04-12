@@ -11,7 +11,7 @@ public class ProductDto
     public string? Unit { get; set; }       // "500g", "1 Trái (1.2-1.5kg)"
     public int Stock { get; set; }          // Số lượng tồn kho
     public int CategoryId { get; set; }
-    public string CategoryName { get; set; } // Tên danh mục (FE dùng string category, không phải id)
+    public string? CategoryName { get; set; } // Tên danh mục (FE dùng string category, không phải id)
 }
 
 public class ProductsPageResponse

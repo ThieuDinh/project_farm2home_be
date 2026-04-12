@@ -89,8 +89,13 @@ namespace farm2homeWebApi.Controllers
                 return Unauthorized(new { message = "Email hoặc mật khẩu không chính xác" });
             }
 
+            if (user.IsBanned)
+            {
+                return BadRequest(new { message = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên." });
+            }
+
             var token = GenerateJwtToken(user);
-            return Ok(new { token, user = new { user.Email, user.FullName } });
+            return Ok(new { token, user = new { user.Email, user.FullName, user.Role } });
         }
 
         // --- ĐĂNG NHẬP GOOGLE / FACEBOOK ---
@@ -179,7 +184,7 @@ namespace farm2homeWebApi.Controllers
                         token,
                         status = "Success",
                         message = "Đăng nhập thành công",
-                        user = new { user.Email, user.FullName },
+                        user = new { user.Email, user.FullName, user.Role },
                     }
                 );
             }
@@ -207,7 +212,7 @@ namespace farm2homeWebApi.Controllers
                         token,
                         status = "Linked",
                         message = "Đã liên kết với tài khoản cũ thành công",
-                        user = new { user.Email, user.FullName },
+                        user = new { user.Email, user.FullName, user.Role },
                     }
                 );
             }
@@ -237,7 +242,7 @@ namespace farm2homeWebApi.Controllers
                         token,
                         status = "Created",
                         message = "Đã tạo tài khoản mới thành công",
-                        user = new { newUser.Email, newUser.FullName },
+                        user = new { newUser.Email, newUser.FullName, newUser.Role },
                     }
                 );
             }
@@ -255,6 +260,7 @@ namespace farm2homeWebApi.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("FullName", user.FullName), // Custom claim
+                new Claim(ClaimTypes.Role, user.Role), // Claim quyết định quyền hạn Admin / Customer
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // ID duy nhất của token
             };
 
